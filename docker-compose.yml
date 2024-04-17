@@ -26,8 +26,8 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
     environment:
-      - MYSQL_DATABASE=docker
-      - MYSQL_ROOT_PASSWORD=docker
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
     networks: 
       - node-network
 
