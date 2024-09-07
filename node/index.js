@@ -10,20 +10,25 @@ const config = {
 const mysql = require("mysql");
 
 app.get("/", (req, res) => {
-  let sql = `insert into people (name) values ('Lucas Marinho');`;
+  const createDbSql = `create database if not exists nodedb;`;
+  const createTableSql = `create table if not exists people (name varchar(255) not null);`;
+  const sql = `insert into people (name) values ('Lucas Marinho');`;
+
   let connection = mysql.createConnection(config);
-  connection.query(sql, function (err, rows, fields) {
-    if (err) return console.log(`Insert -> ${err}\nCode:${err.code}\nSQL:${err.sql}\n\n\n`);
-    connection.query(
-      `select id,name from people`,
-      function (err, rows, fields) {
-        res.send({ title: "<h1>Full Cycle Rocks!</h1>", data: rows });
-        if (err) console.log("Connection result error ->" + err.code);
-        connection.end();
-      }
-    );
+
+  connection.query(createDbSql, function (err, rows, fields) {
+    if (err) return console.log(`Create DB -> ${err}\nCode:${err.code}\nSQL:${err.sql}\n\n\n`);
+    connection.query(createTableSql, function (err, rows, fields) {
+      if (err) return console.log(`Create Table -> ${err}\nCode:${err.code}\nSQL:${err.sql}\n\n\n`);
+      connection.query(sql, function (err, rows, fields) {
+        if (err) return console.log(`Insert -> ${err}\nCode:${err.code}\nSQL:${err.sql}\n\n\n`);
+        connection.query("select name from people", function (err, rows, fields) {
+          if (err) return console.log(`Select -> ${err}\nCode:${err.code}\nSQL:${err.sql}\n\n\n`);
+          res.send(`<h1>Full Cycle Rocks!</h1><br><h2>${rows[0].name}</h2>`);
+        });
+      });
+    });
   });
-  
 });
 
 app.listen(port, () => {
